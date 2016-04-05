@@ -2,21 +2,30 @@ apiVersion: v1
 kind: ReplicationController
 metadata:
   labels:
-    component: rabbitmq
-  name: rabbitmq-controller
+    servicebroker: sb-instanceid-rabbitmq
+  name: sb-instanceid-rabbitmq
 spec:
   replicas: 1
+  selector:
+    servicebroker: sb-instanceid-rabbitmq
   template:
     metadata:
       labels:
-        app: taskQueue
-        component: rabbitmq
+        servicebroker: sb-instanceid-rabbitmq
     spec:
       containers:
-      - image: rabbitmq
-        name: rabbitmq
-        ports:
-        - containerPort: 5672
+      - image: rabbitmq:3-management
+        name: sb-instanceid-rabbitmq
         resources:
           limits:
-            cpu: 100m
+            cpu: 0.1
+        env:
+          - name: RABBITMQ_ERLANG_COOKIE
+            value: 3B694385-9169-42FF-8667-21E4F808F3AD
+          - name: RABBITMQ_DEFAULT_USER
+            value: admin
+          - name: RABBITMQ_DEFAULT_PASS
+            value: test1234
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
